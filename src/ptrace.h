@@ -3,7 +3,6 @@
 #ifndef PTRACE_H_
 #define PTRACE_H_
 #define CPSR_T_MASK (1u << 5)
-#define DEBUG true
 
 int PtraceAttach(pid_t pid);
 int PtraceDetach(pid_t pid);

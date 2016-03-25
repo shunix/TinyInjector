@@ -1,6 +1,7 @@
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "config.h"
 #include "ptrace.h"
 
 int PtraceAttach(pid_t pid) {

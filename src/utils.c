@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "config.h"
 #include "utils.h"
 
 pid_t GetPid(const char* process_name) {
