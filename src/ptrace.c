@@ -3,8 +3,12 @@
 #include <unistd.h>
 #include "config.h"
 #include "ptrace.h"
+#include "utils.h"
 
 int PtraceAttach(pid_t pid) {
+  if (IsSelinuxEnabled()) {
+    DisableSelinux();
+  }
   if (pid == -1) {
     return -1;
   }
@@ -13,6 +17,9 @@ int PtraceAttach(pid_t pid) {
     return -1;
   }
   waitpid(pid, NULL, WUNTRACED);
+  if (DEBUG) {
+    printf("Attached to process %d\n", pid);
+  }
   return 0;
 }
 
@@ -23,6 +30,9 @@ int PtraceDetach(pid_t pid) {
   if (ptrace(PTRACE_DETACH, pid, NULL, NULL) < 0) {
     perror(NULL);
     return -1;
+  }
+  if (DEBUG) {
+    printf("Detached from process %d\n", pid);
   }
   return 0;
 }
@@ -47,6 +57,9 @@ void PtraceWrite(pid_t pid, uint8_t* addr, uint8_t* data, size_t size) {
       tmp_data++;
     }
     ptrace(PTRACE_POKEDATA, pid, tmp_addr, val);
+  }
+  if (DEBUG) {
+    printf("Write %d bytes to %p process %d\n", size, addr, pid);
   }
 }
 
@@ -84,5 +97,8 @@ long CallRemoteFunction(pid_t pid, long function_addr, long* args, size_t argc) 
   ptrace(PTRACE_GETREGS, pid, NULL, &regs);
   ptrace(PTRACE_SETREGS, pid, NULL, &backup_regs);
   // Fuction return value
+  if (DEBUG) {
+    printf("Call remote function %lx with %d arguments, return value is %lx\n", function_addr, argc, regs.ARM_r0);
+  }
   return regs.ARM_r0;
 }
