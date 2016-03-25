@@ -21,6 +21,17 @@ long CallMmap(pid_t pid, size_t length) {
   return CallRemoteFunction(pid, function_addr, params, 6);
 }
 
+long CallMunmap(pid_t pid, long addr, size_t length) {
+  long function_addr = GetRemoteFuctionAddr(pid, LIBC_PATH, ((long) (void*)munmap));
+  long params[2];
+  params[0] = addr;
+  params[1] = length;
+  if (DEBUG) {
+    printf("munmap called, function address %lx process %d address %lx size %d\n", function_addr, pid, addr, length);
+  }
+  return CallRemoteFunction(pid, function_addr, params, 2);
+}
+
 long CallDlopen(pid_t pid, const char* library_path) {
   long function_addr = GetRemoteFuctionAddr(pid, LINKER_PATH, ((long) (void*)dlopen));
   long mmap_ret = CallMmap(pid, 0x400);
@@ -31,7 +42,9 @@ long CallDlopen(pid_t pid, const char* library_path) {
   if (DEBUG) {
     printf("dlopen called, function address %lx process %d library path %s\n", function_addr, pid, library_path);
   }
-  return CallRemoteFunction(pid, function_addr, params, 2);
+  long ret = CallRemoteFunction(pid, function_addr, params, 2);
+  CallMunmap(pid, mmap_ret, 0x400);
+  return ret;
 }
 
 long CallDlsym(pid_t pid, long so_handle, const char* symbol) {
@@ -44,7 +57,9 @@ long CallDlsym(pid_t pid, long so_handle, const char* symbol) {
   if (DEBUG) {
     printf("dlsym called, function address %lx process %d so handle %lx symbol name %s\n", function_addr, pid, so_handle, symbol);
   }
-  return CallRemoteFunction(pid, function_addr, params, 2);
+  long ret = CallRemoteFunction(pid, function_addr, params, 2);
+  CallMunmap(pid, mmap_ret, 0x400);
+  return ret;
 }
 
 long CallDlclose(pid_t pid, long so_handle) {
