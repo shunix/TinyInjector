@@ -4,5 +4,6 @@ before_install:
   - sudo chmod a+x android-ndk-r10e-linux-x86_64.bin
   - ./android-ndk-r10e-linux-x86_64.bin > /dev/null
   - ./android-configure ./android-ndk-r10e
+  
 script:
   - make
