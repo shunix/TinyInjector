@@ -16,6 +16,10 @@ int main(int argc, char const *argv[]) {
     printf("process name: %s, library path: %s, pid: %d\n", process_name, library_path, pid);
   }
 
+  if (IsSelinuxEnabled()) {
+    DisableSelinux();
+  }
+
   InjectLibrary(pid, library_path);
   return 0;
 }

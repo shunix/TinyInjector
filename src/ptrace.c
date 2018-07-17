@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "config.h"
 #include "ptrace.h"
-#include "utils.h"
 
 #if defined(__aarch64__)
   #define pt_regs  user_pt_regs
@@ -21,9 +20,6 @@ static void PtraceSetRegs(pid_t pid, struct pt_regs *regs);
 static void PtraceCont(pid_t pid);
 
 int PtraceAttach(pid_t pid) {
-  if (IsSelinuxEnabled()) {
-    DisableSelinux();
-  }
   if (pid == -1) {
     return -1;
   }
