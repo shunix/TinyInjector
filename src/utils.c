@@ -19,7 +19,7 @@ pid_t GetPid(const char* process_name) {
     size_t pid = atoi(entry->d_name);
     if (pid != 0) {
       char file_name[30];
-      snprintf(file_name, 30, "/proc/%d/cmdline", pid);
+      snprintf(file_name, 30, "/proc/%zu/cmdline", pid);
       FILE *fp = fopen(file_name, "r");
       char temp_name[50];
       if (fp != NULL) {

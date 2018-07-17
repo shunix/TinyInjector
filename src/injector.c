@@ -16,7 +16,7 @@ long CallMmap(pid_t pid, size_t length) {
   params[4] = 0;
   params[5] = 0;
   if (DEBUG) {
-    printf("mmap called, function address %lx process %d size %d\n", function_addr, pid, length);
+    printf("mmap called, function address %lx process %d size %zu\n", function_addr, pid, length);
   }
   return CallRemoteFunction(pid, function_addr, params, 6);
 }
@@ -27,7 +27,7 @@ long CallMunmap(pid_t pid, long addr, size_t length) {
   params[0] = addr;
   params[1] = length;
   if (DEBUG) {
-    printf("munmap called, function address %lx process %d address %lx size %d\n", function_addr, pid, addr, length);
+    printf("munmap called, function address %lx process %d address %lx size %zu\n", function_addr, pid, addr, length);
   }
   return CallRemoteFunction(pid, function_addr, params, 2);
 }
@@ -79,8 +79,13 @@ long InjectLibrary(pid_t pid, const char* library_path) {
   PtraceAttach(pid);
   long so_handle = CallDlopen(pid, library_path);
   if (DEBUG) {
-    printf("Injection ended...\n");
+    if (!so_handle) {
+      printf("Injection failed...\n");
+    } else {
+      printf("Injection ended succesfully...\n");
+    }
   }
+
   PtraceDetach(pid);
   return so_handle;
 }
