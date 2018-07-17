@@ -6,9 +6,11 @@
 #if defined(__aarch64__)
 #define LIBC_PATH      "/system/lib64/libc.so"
 #define LINKER_PATH    "/system/lib64/libdl.so"
+#define VNDK_LIB_PATH  "/system/lib64/libRS.so"
 #else
 #define LIBC_PATH      "/system/lib/libc.so"
 #define LINKER_PATH    "/system/lib/libdl.so"
+#define VNDK_LIB_PATH  "/system/lib/libRS.so"
 #endif
 
 long CallMmap(pid_t pid, size_t length);

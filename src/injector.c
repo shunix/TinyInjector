@@ -42,7 +42,8 @@ long CallDlopen(pid_t pid, const char* library_path) {
   if (DEBUG) {
     printf("dlopen called, function address %lx process %d library path %s\n", function_addr, pid, library_path);
   }
-  long ret = CallRemoteFunction(pid, function_addr, params, 2);
+  long vndk_return_addr = GetModuleBaseAddr(pid, VNDK_LIB_PATH);
+  long ret = CallRemoteFunctionFromNamespace(pid, function_addr, vndk_return_addr, params, 2);
   CallMunmap(pid, mmap_ret, 0x400);
   return ret;
 }

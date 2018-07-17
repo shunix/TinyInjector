@@ -105,6 +105,10 @@ static void PtraceCont(pid_t pid) {
 }
 
 long CallRemoteFunction(pid_t pid, long function_addr, long* args, size_t argc) {
+  return CallRemoteFunctionFromNamespace(pid, function_addr, 0, args, argc);
+}
+
+long CallRemoteFunctionFromNamespace(pid_t pid, long function_addr, long return_addr, long* args, size_t argc) {
   #if defined(__aarch64__)
     #define REGS_ARG_NUM    6
   #else
@@ -128,7 +132,7 @@ long CallRemoteFunction(pid_t pid, long function_addr, long* args, size_t argc) 
     PtraceWrite(pid, (uint8_t*)regs.ARM_sp, (uint8_t*)data, (argc - REGS_ARG_NUM) * sizeof(long));
   }
   // set return addr to 0, so we could catch SIGSEGV
-  regs.ARM_lr = 0;
+  regs.ARM_lr = return_addr;
   regs.ARM_pc = function_addr;
 
   #if !defined(__aarch64__)
