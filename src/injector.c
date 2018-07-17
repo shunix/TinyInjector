@@ -11,7 +11,7 @@ long CallMmap(pid_t pid, size_t length) {
   long params[6];
   params[0] = 0;
   params[1] = length;
-  params[2] = PROT_READ | PROT_WRITE | PROT_EXEC;
+  params[2] = PROT_READ | PROT_WRITE;
   params[3] = MAP_PRIVATE | MAP_ANONYMOUS;
   params[4] = 0;
   params[5] = 0;
