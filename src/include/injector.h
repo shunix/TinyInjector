@@ -2,8 +2,16 @@
 
 #ifndef INJECTOR_H_
 #define INJECTOR_H_
-#define LIBC_PATH "/system/lib/libc.so"
-#define LINKER_PATH "/system/bin/linker"
+
+#if defined(__aarch64__)
+#define LIBC_PATH      "/system/lib64/libc.so"
+#define LINKER_PATH    "/system/lib64/libdl.so"
+#define VNDK_LIB_PATH  "/system/lib64/libRS.so"
+#else
+#define LIBC_PATH      "/system/lib/libc.so"
+#define LINKER_PATH    "/system/lib/libdl.so"
+#define VNDK_LIB_PATH  "/system/lib/libRS.so"
+#endif
 
 long CallMmap(pid_t pid, size_t length);
 long CallDlopen(pid_t pid, const char* library_path);

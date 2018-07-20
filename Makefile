@@ -3,7 +3,8 @@ all:
 	 NDK_PROJECT_PATH=.\
 	 NDK_APPLICATION_MK=./Application.mk\
 	 NDK_APP_DST_DIR=./build/\
-	 NDK_APP_OUT=./build/
+	 NDK_APP_OUT=./build/ \
+	 APP_BUILD_SCRIPT=./Android.mk
 clean:
 	@rm -rf ./build
 install:
