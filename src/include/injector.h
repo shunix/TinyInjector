@@ -4,23 +4,17 @@
 #define INJECTOR_H_
 
 #if defined(__aarch64__)
-#ifndef __BIONIC__
-#define LIBC_PATH      "/system/lib64/libc.so"
-#define LINKER_PATH    "/system/lib64/libdl.so"
+#define LIBC_PATH_OLD		"/system/lib64/libc.so"
+#define LIBC_PATH_NEW		"/apex/com.android.runtime/lib64/bionic/libc.so"
+#define LINKER_PATH_OLD		"/system/lib64/libdl.so"
+#define LINKER_PATH_NEW		"/apex/com.android.runtime/lib64/bionic/libdl.so"
+#define VNDK_LIB_PATH		"/system/lib64/libRS.so"
 #else
-#define LIBC_PATH      "/apex/com.android.runtime/lib64/libc.so"
-#define LINKER_PATH    "/apex/com.android.runtime/lib64/libdl.so"
-#endif
-#define VNDK_LIB_PATH  "/system/lib64/libRS.so"
-#else
-#ifndef __BIONIC__
-#define LIBC_PATH      "/system/lib/libc.so"
-#define LINKER_PATH    "/system/lib/libdl.so"
-#else
-#define LIBC_PATH      "/apex/com.android.runtime/lib/libc.so"
-#define LINKER_PATH    "/apex/com.android.runtime/lib/libdl.so"
-#endif
-#define VNDK_LIB_PATH  "/system/lib/libRS.so"
+#define LIBC_PATH_OLD		"/system/lib/libc.so"
+#define LIBC_PATH_NEW		"/apex/com.android.runtime/lib/bionic/libc.so"
+#define LINKER_PATH_OLD		"/system/lib/libdl.so"
+#define LINKER_PATH_NEW		"/apex/com.android.runtime/lib/bionic/libdl.so"
+#define VNDK_LIB_PATH		"/system/lib/libRS.so"
 #endif
 
 long CallMmap(pid_t pid, size_t length);
