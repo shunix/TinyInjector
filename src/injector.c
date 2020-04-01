@@ -5,9 +5,39 @@
 #include "injector.h"
 #include "ptrace.h"
 #include "utils.h"
+#include <sys/system_properties.h>
+
+static int AndroidOSVersion = -1;
+
+int GetOSVersion()
+{
+	if (AndroidOSVersion != -1)
+		return AndroidOSVersion;
+	
+	char osVersion[PROP_VALUE_MAX + 1];
+	int osVersionLength = __system_property_get("ro.build.version.release", osVersion);
+	AndroidOSVersion = atoi(osVersion);
+	return AndroidOSVersion;
+}
+
+const char* LibCPathGet()
+{	
+	if (GetOSVersion() >= 10)
+		return LIBC_PATH_NEW;
+	else
+		return LIBC_PATH_OLD;
+}
+
+const char* LinkerPathGet()
+{
+	if (GetOSVersion() >= 10)	
+		return LINKER_PATH_NEW;
+	else
+		return LINKER_PATH_OLD;
+}
 
 long CallMmap(pid_t pid, size_t length) {
-  long function_addr = GetRemoteFuctionAddr(pid, LIBC_PATH, ((long) (void*)mmap));
+  long function_addr = GetRemoteFuctionAddr(pid, LibCPathGet(), ((long) (void*)mmap));
   long params[6];
   params[0] = 0;
   params[1] = length;
@@ -22,7 +52,7 @@ long CallMmap(pid_t pid, size_t length) {
 }
 
 long CallMunmap(pid_t pid, long addr, size_t length) {
-  long function_addr = GetRemoteFuctionAddr(pid, LIBC_PATH, ((long) (void*)munmap));
+  long function_addr = GetRemoteFuctionAddr(pid, LibCPathGet(), ((long) (void*)munmap));
   long params[2];
   params[0] = addr;
   params[1] = length;
@@ -33,7 +63,7 @@ long CallMunmap(pid_t pid, long addr, size_t length) {
 }
 
 long CallDlopen(pid_t pid, const char* library_path) {
-  long function_addr = GetRemoteFuctionAddr(pid, LINKER_PATH, ((long) (void*)dlopen));
+  long function_addr = GetRemoteFuctionAddr(pid, LinkerPathGet(), ((long) (void*)dlopen));
   long mmap_ret = CallMmap(pid, 0x400);
   PtraceWrite(pid, (uint8_t*)mmap_ret, (uint8_t*)library_path, strlen(library_path) + 1);
   long params[2];
@@ -49,7 +79,7 @@ long CallDlopen(pid_t pid, const char* library_path) {
 }
 
 long CallDlsym(pid_t pid, long so_handle, const char* symbol) {
-  long function_addr = GetRemoteFuctionAddr(pid, LINKER_PATH, ((long) (void*)dlsym));
+  long function_addr = GetRemoteFuctionAddr(pid, LinkerPathGet(), ((long) (void*)dlsym));
   long mmap_ret = CallMmap(pid, 0x400);
   PtraceWrite(pid, (uint8_t*)mmap_ret, (uint8_t*)symbol, strlen(symbol) + 1);
   long params[2];
@@ -64,7 +94,7 @@ long CallDlsym(pid_t pid, long so_handle, const char* symbol) {
 }
 
 long CallDlclose(pid_t pid, long so_handle) {
-  long function_addr = GetRemoteFuctionAddr(pid, LINKER_PATH, ((long) (void*)dlclose));
+  long function_addr = GetRemoteFuctionAddr(pid, LinkerPathGet(), ((long) (void*)dlclose));
   long params[1];
   params[0] = so_handle;
   if (DEBUG) {
